@@ -1,0 +1,6 @@
+streamlit
+pandas
+matplotlib
+seaborn
+ollama
+scipy>=1.11.0
