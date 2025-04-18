@@ -16,4 +16,3 @@ TOOL_FUNCTIONS = {
     "correlation": plot_correlation,
     "pie": plot_pie,
 }
-print("entered tools init")
