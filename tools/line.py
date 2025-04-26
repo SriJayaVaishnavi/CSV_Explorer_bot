@@ -65,13 +65,8 @@ def plot_line(df: pd.DataFrame, query: str = ""):
     df[time_col] = pd.to_datetime(df[time_col], errors="coerce")
     df = df.dropna(subset=[time_col, y_col]).sort_values(time_col)
 
-    # 🆕 Add dropdown for Daily/Monthly/Yearly
-    agg_map = {'Daily': 'D', 'Monthly': 'M', 'Yearly': 'Y'}
-    default_agg = determine_time_aggregation(query)
-    agg_display = {'D': 'Daily', 'M': 'Monthly', 'Y': 'Yearly'}[default_agg]
-
-    agg_choice = st.selectbox("👉 Select time aggregation", options=['Daily', 'Monthly', 'Yearly'], index=['Daily', 'Monthly', 'Yearly'].index(agg_display))
-    agg_level = agg_map[agg_choice]
+    agg_level = determine_time_aggregation(query)
+    df.set_index(time_col, inplace=True)
 
     # ---- smart filtering based on query ----
     groupby_cols = [col for col in df.reset_index().columns if df.reset_index()[col].nunique() < 100 and df.reset_index()[col].dtype == 'object']
@@ -93,10 +88,10 @@ def plot_line(df: pd.DataFrame, query: str = ""):
         df_filtered = df_filtered[df_filtered[selected_group_col] == selected_value]
         df_filtered = df_filtered.set_index(time_col)
         df_agg = df_filtered[[y_col]].resample(agg_level).mean().reset_index()
-        plot_title = f"{y_col} over time ({agg_choice}) for {selected_value}"
+        plot_title = f"{y_col} over time ({'Daily' if agg_level=='D' else 'Monthly' if agg_level=='M' else 'Yearly'}) for {selected_value}"
     else:
         df_agg = df[[y_col]].resample(agg_level).mean().reset_index()
-        plot_title = f"{y_col} over time ({agg_choice})"
+        plot_title = f"{y_col} over time ({'Daily' if agg_level=='D' else 'Monthly' if agg_level=='M' else 'Yearly'})"
 
     # ---- plotting ----
     sns.set_theme(style="whitegrid")
