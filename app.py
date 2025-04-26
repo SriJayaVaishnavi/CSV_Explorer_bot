@@ -10,83 +10,80 @@ st.set_page_config(page_title="CSV Explorer", layout="centered")
 
 # === Add Background & Styling ===
 def add_bg_from_local(image_file):
-    css = """
+    with open(image_file, "rb") as f:
+        data = f.read()
+    encoded_image = base64.b64encode(data).decode()
+
+    css = f"""
     <style>
-    .stApp {
-        background: radial-gradient(
-            circle at top right,
-            #4a4a4a 0%,
-            #636363 25%,
-            #7a7a7a 50%,
-            #8f8f8f 75%,
-            #a3a3a3 100%
-        );
-        background-size: 200% 200%;
+    .stApp {{
+        background-image: url("data:image/jpg;base64,{encoded_image}");
+        background-size: cover;
         background-position: center;
         background-attachment: fixed;
-    }
-    .stMarkdown {
+    }}
+    .stMarkdown {{
         color: white !important;
-    }
-    h1, h2, h3, h4, h5, h6 {
+    }}
+    h1, h2, h3, h4, h5, h6 {{
         color: white !important;
         text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-    }
-    p, label, div {
+    }}
+    p, label, div {{
         color: white !important;
-    }
+    }}
     /* File uploader styling */
-    div[data-testid="stFileUploader"] {
+    div[data-testid="stFileUploader"] {{
         width: 100%;
-    }
-    div[data-testid="stFileUploadDropzone"] {
+    }}
+    div[data-testid="stFileUploadDropzone"] {{
         background-color: rgba(255, 255, 255, 0.1) !important;
         border: 1px dashed rgba(255, 255, 255, 0.3) !important;
         border-radius: 12px !important;
         padding: 20px !important;
         backdrop-filter: blur(8px);
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-    }
-    div[data-testid="stFileUploadDropzone"]:hover {
+    }}
+    div[data-testid="stFileUploadDropzone"]:hover {{
         background-color: rgba(255, 255, 255, 0.15) !important;
         border: 1px dashed rgba(255, 255, 255, 0.4) !important;
         transition: all 0.3s ease;
-    }
-    div[data-testid="stFileUploadDropzone"] p {
+    }}
+    div[data-testid="stFileUploadDropzone"] p {{
         color: white !important;
-    }
-    .uploadedFile {
+    }}
+    .uploadedFile {{
         background-color: rgba(255, 255, 255, 0.1) !important;
         border: 1px solid rgba(255, 255, 255, 0.2) !important;
         border-radius: 8px !important;
         backdrop-filter: blur(8px);
-    }
-    .stTextInput > div > div > input {
+    }}
+    .stTextInput > div > div > input {{
         color: white !important;
         background-color: rgba(255,255,255,0.1) !important;
         border-color: rgba(255,255,255,0.2) !important;
-    }
-    .stTextInput > div > div > input::placeholder {
+    }}
+    .stTextInput > div > div > input::placeholder {{
         color: rgba(255,255,255,0.6) !important;
-    }
-    .stDataFrame {
+    }}
+    .stDataFrame {{
         background-color: rgba(255,255,255,0.1) !important;
-    }
-    .stButton > button {
+    }}
+    .stButton > button {{
         background-color: rgba(255,255,255,0.15);
         color: white;
         border: 1px solid rgba(255,255,255,0.2);
-    }
-    .stButton > button:hover {
+    }}
+    .stButton > button:hover {{
         background-color: rgba(255,255,255,0.25);
         border: 1px solid rgba(255,255,255,0.3);
-    }
+    }}
     </style>
     """
-    st.markdown(css, unsafe_allow_html=True)
+    st.markdown(css, unsafe_allow_html=True )
 
 # 🐝 Add background (path to saved image)
-add_bg_from_local("bg.png")
+add_bg_from_local("bgg.jpg")
 
 # === Streamlit App Logic ===
 st.title("📊CSV Explorer")
