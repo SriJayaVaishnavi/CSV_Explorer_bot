@@ -1,7 +1,0 @@
-1.Can you give me an overview of the statistics for all the numeric columns in the dataset
-2.How does PM2.5 level relate to NO2 concentration? I’d like to see how they interact with each other.
-3.Show me how the SO2 values have changed over time throughout the dataset.
-4.I want to compare the average CO levels across different locations
-5.What does the distribution of PM10 levels look like across the dataset?
-6.Break down the percentage of records coming from each monitoring station.
-7.show me the correlation plot

@@ -21,10 +21,12 @@ The CSV Analyst Bot is a Streamlit-based application designed to analyze CSV fil
 The project requires the following dependencies, as specified in `requirements.txt`:
 - Streamlit
 - Pandas
-- Requests
+- Matplotlib
+- Seaborn
+- Scipy
 
 
 ## Usage
 1. **Run the Application**: Use Streamlit to run the application and open it in a web browser.
 2. **Upload CSV**: Use the file uploader to select and upload a CSV file.
-3. **Input Query**: Enter a query about the data to receive insights and visualizations.
+3. **Input Query**: Enter a query about the data to receive insights via visualisation.
