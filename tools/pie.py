@@ -44,7 +44,7 @@ def plot_pie(df: pd.DataFrame, query: str = ""):
     show_record_counts = "record" in query_lower or "percentage" in query_lower
 
     if show_record_counts:
-        # Try to find a grouping column
+        # Explicitly want record counts
         possible_group_cols = df.select_dtypes(include=["object", "category"]).columns.tolist()
         st.info("Query indicates percentage of records. Showing distribution by category.")
         group_col = None
@@ -67,42 +67,66 @@ def plot_pie(df: pd.DataFrame, query: str = ""):
         title = f"Distribution of records by `{group_col}`"
 
     else:
-        if not col:
-            st.warning("Could not identify a numeric column to plot from the query.")
-            col = st.selectbox("Select a numeric column to plot", df.select_dtypes(include=["float64", "int64"]).columns)
+        if col:
+            # Numeric column found
+            unique_vals = set(df[col].dropna().unique())
+            is_binary = unique_vals.issubset({0, 1})
 
-        unique_vals = set(df[col].dropna().unique())
-        is_binary = unique_vals.issubset({0, 1})
-
-        if is_binary:
-            if any(key in col.lower() for key in ["sex", "gender"]):
-                label_map = {0: "Male", 1: "Female"}
+            if is_binary:
+                if any(key in col.lower() for key in ["sex", "gender"]):
+                    label_map = {0: "Male", 1: "Female"}
+                else:
+                    label_map = {0: "No", 1: "Yes"}
+                mapped_series = df[col].map(label_map)
+                value_counts = mapped_series.value_counts()
+                labels = value_counts.index
+                values = value_counts.values
             else:
-                label_map = {0: "No", 1: "Yes"}
-            mapped_series = df[col].map(label_map)
-            value_counts = mapped_series.value_counts()
-            labels = value_counts.index
-            values = value_counts.values
+                if df[col].nunique() > 20:
+                    st.warning("Too many unique values to show in pie chart. Showing top 10 by frequency.")
+                    value_counts = df[col].value_counts().nlargest(10)
+                else:
+                    value_counts = df[col].value_counts()
+                labels = value_counts.index
+                values = value_counts.values
+
+            title = f"Pie chart of `{col}`" + (f" in `{filter_val}`" if filter_val else "")
         else:
-            if df[col].nunique() > 20:
+            # No numeric column — fallback: treat query as asking for categorical frequency
+            possible_group_cols = df.select_dtypes(include=["object", "category"]).columns.tolist()
+
+            st.info("No numeric column detected. Falling back to categorical frequency plot.")
+            group_col = None
+
+            for col_name in possible_group_cols:
+                if normalize(col_name) in normalize(query):
+                    group_col = col_name
+                    break
+
+            if not group_col:
+                group_col = st.selectbox("Select a categorical column to count records", possible_group_cols)
+
+            value_counts = df[group_col].value_counts()
+            if len(value_counts) > 20:
                 st.warning("Too many unique values to show in pie chart. Showing top 10 by frequency.")
-                value_counts = df[col].value_counts().nlargest(10)
-            else:
-                value_counts = df[col].value_counts()
+                value_counts = value_counts.nlargest(10)
+
             labels = value_counts.index
             values = value_counts.values
+            title = f"Distribution of `{group_col}`"
 
-        title = f"Pie chart of `{col}`" + (f" in `{filter_val}`" if filter_val else "")
-
-    # Plotting with smaller fonts
+    # Plotting
     fig, ax = plt.subplots()
     wedges, texts, autotexts = ax.pie(
-        values,
-        labels=labels,
-        autopct="%1.1f%%",
-        startangle=140,
-        textprops=dict(fontsize=10)  # Smaller font
-    )
+    values,
+    labels=labels,
+    autopct="%1.1f%%",
+    startangle=140,
+    textprops=dict(fontsize=10),
+    pctdistance=0.85,     # Move percentages closer to the edge
+    labeldistance=1.1     # Move labels slightly outside
+)
+
     ax.set_title(title, fontsize=12)
     for text in texts:
         text.set_fontsize(10)
